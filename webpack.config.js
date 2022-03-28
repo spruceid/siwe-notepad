@@ -4,13 +4,11 @@ const webpack = require('webpack');
 module.exports = {
     entry: './src/providers.ts',
     module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-        ],
+        rules: [{
+            test: /\.tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/,
+        }, ],
     },
     devtool: 'source-map',
     resolve: {
@@ -26,6 +24,7 @@ module.exports = {
             assert: require.resolve('assert/'),
             http: require.resolve('stream-http'),
             fs: false,
+            events: require.resolve("events/"),
         },
     },
     mode: 'development',
