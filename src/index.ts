@@ -13,7 +13,10 @@ import Morgan from 'morgan';
 import Path from 'path';
 import FileStore from 'session-file-store';
 import { ErrorTypes, generateNonce, SiweMessage } from 'siwe';
+import { SSXInfuraProviderNetworks, SSXExpressMiddleware, SSXRPCProviders, SSXServer } from '@spruceid/ssx-server';
+
 const FileStoreStore = FileStore(Session);
+console.log(process.env.SSX_SIGNING_KEY)
 
 config();
 const PROD = process.env.ENVIRONMENT === 'production';
@@ -40,6 +43,31 @@ declare module 'express-session' {
 
 const app = Express();
 
+
+// Setup ssx instance
+const ssx = new SSXServer({
+    signingKey: process.env.SSX_SIGNING_KEY,
+    providers: {
+      rpc: {
+        service: SSXRPCProviders.SSXInfuraProvider,
+        network: SSXInfuraProviderNetworks.MAINNET,
+        apiKey: process.env.INFURA_API_KEY ?? "",
+      },
+    //   metrics: {
+    //     service: 'ssx',
+    //     apiKey: process.env.SSX_API_TOKEN ?? ""
+    //   },
+    //   sessionConfig: {
+    //     store: (session) => {
+    //         return new FileStoreStore({
+    //             path: Path.resolve(__dirname, '../db/sessions'),
+    //         });
+    //     } 
+    //   }
+    },
+  });
+  
+
 /**
  * CSP Policies
  */
@@ -51,7 +79,9 @@ app.use(
 app.use(Express.json({ limit: 43610 }));
 app.use(Express.urlencoded({ extended: true }));
 app.use(Morgan('combined'));
-
+  
+app.use(SSXExpressMiddleware(ssx));
+  
 app.use(
     Session({
         name: process.env.SESSION_COOKIE_NAME ?? 'siwe-notepad-session',

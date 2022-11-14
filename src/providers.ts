@@ -46,7 +46,7 @@ const signIn = async (connector: Providers) => {
             break;
         case Providers.WALLET_CONNECT:
             provider = new WalletConnect({
-                infuraId: process.env.INFURA_ID,
+                infuraId: process.env.INFURA_API_KEY,
             });
             break;
         default:
