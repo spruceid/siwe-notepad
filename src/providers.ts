@@ -28,6 +28,7 @@ let disconnectButton: HTMLDivElement;
 let saveButton: HTMLDivElement;
 let notepad: HTMLTextAreaElement;
 let unsaved: HTMLParagraphElement;
+let ssx: SSX | undefined;
 
 /**
  * We need these to remove/add the eventListeners
@@ -36,42 +37,37 @@ let unsaved: HTMLParagraphElement;
 const signIn = async (connector: Providers) => {
     let provider: ethers.providers.Web3Provider;
 
-    /**
-     * Connects to the wallet and starts a etherjs provider.
-     */
-    if (connector === 'metamask') {
-        await metamask.request({
-            method: 'eth_requestAccounts',
-        });
-        provider = new ethers.providers.Web3Provider(metamask);
-    } else {
-        /**
-         * The Infura ID provided just for the sake of the demo, you'll need to replace
-         * it if you want to go to production.
-         */
-        walletconnect = new WalletConnect({
-            infuraId: '8fcacee838e04f31b6ec145eb98879c8',
-        });
-        walletconnect.enable();
-        provider = new ethers.providers.Web3Provider(walletconnect);
+    switch (connector) {
+        case Providers.METAMASK:
+            provider = new ethers.providers.Web3Provider(metamask);
+            break;
+        case Providers.WALLET_CONNECT:
+            walletconnect = new WalletConnect({
+                infuraId: "8fcacee838e04f31b6ec145eb98879c8" || process.env.INFURA_API_KEY,
+            });
+            walletconnect.enable();
+            provider = new ethers.providers.Web3Provider(walletconnect);
+            break;
+        default:
+            throw new Error('Unknown connector');
     }
 
-    const [address] = await provider.listAccounts();
-    if (!address) {
-        throw new Error('Address not found.');
-    }
-
-    /**
-     * Try to resolve address ENS and updates the title accordingly.
-     */
-    let ens: string;
+    ssx = new SSX({
+        providers: {
+            web3: { driver: provider },
+          },
+        siweConfig: {
+            domain: 'localhost:4361',
+            statement: 'SIWE Notepad Example',
+        },
+    });
+    let address, ens;
     try {
-        ens = await provider.lookupAddress(address);
+        ({ address, ens } = await ssx.signIn());
+        updateTitle(ens?.domain || address);
     } catch (error) {
         console.error(error);
     }
-
-    updateTitle(ens ?? address);
 
     /**
      * Gets a nonce from our backend, this will add this nonce to the session so
