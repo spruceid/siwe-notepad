@@ -2,6 +2,7 @@ import WalletConnect from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
 import Mousetrap from 'mousetrap';
 import { SiweMessage } from 'siwe';
+import { SSX } from '@spruceid/ssx';
 
 declare global {
     interface Window {
