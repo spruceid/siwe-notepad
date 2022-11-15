@@ -4,7 +4,7 @@
 const PORT = 4361;
 
 import { config } from 'dotenv';
-import { providers } from 'ethers';
+// import { providers } from 'ethers';
 import Express from 'express';
 import Session from 'express-session';
 import fs from 'fs';
@@ -16,7 +16,6 @@ import { ErrorTypes, generateNonce, SiweMessage } from 'siwe';
 import { SSXInfuraProviderNetworks, SSXExpressMiddleware, SSXRPCProviders, SSXServer } from '@spruceid/ssx-server';
 
 const FileStoreStore = FileStore(Session);
-console.log(process.env.SSX_SIGNING_KEY)
 
 config();
 const PROD = process.env.ENVIRONMENT === 'production';
@@ -33,13 +32,13 @@ if (!process.env.SESSION_COOKIE_NAME || !process.env.SECRET) {
     );
 }
 
-declare module 'express-session' {
-    interface SessionData {
-        siwe: SiweMessage;
-        nonce: string;
-        ens: string;
-    }
-}
+// declare module 'express-session' {
+//     interface SessionData {
+//         siwe: SiweMessage;
+//         nonce: string;
+//         // ens: string;
+//     }
+// }
 
 const app = Express();
 
@@ -53,17 +52,18 @@ const ssx = new SSXServer({
         network: SSXInfuraProviderNetworks.MAINNET,
         apiKey: process.env.INFURA_API_KEY ?? "",
       },
+    
     //   metrics: {
     //     service: 'ssx',
     //     apiKey: process.env.SSX_API_TOKEN ?? ""
     //   },
-    //   sessionConfig: {
-    //     store: (session) => {
-    //         return new FileStoreStore({
-    //             path: Path.resolve(__dirname, '../db/sessions'),
-    //         });
-    //     } 
-    //   }
+      sessionConfig: {
+        store: () => {
+            return new FileStoreStore({
+                path: Path.resolve(__dirname, '../db/sessions'),
+            });
+        } 
+      }
     },
   });
   
@@ -82,123 +82,130 @@ app.use(Morgan('combined'));
   
 app.use(SSXExpressMiddleware(ssx));
   
-app.use(
-    Session({
-        name: process.env.SESSION_COOKIE_NAME ?? 'siwe-notepad-session',
-        secret: process.env.SECRET ?? 'siwe',
-        resave: true,
-        saveUninitialized: true,
-        store: new FileStoreStore({
-            path: Path.resolve(__dirname, '../db/sessions'),
-        }),
-        cookie: {
-            httpOnly: true,
-            secure: PROD || STAGING,
-        },
-    }),
-);
+// app.use(
+//     Session({
+//         name: process.env.SESSION_COOKIE_NAME ?? 'siwe-notepad-session',
+//         secret: process.env.SECRET ?? 'siwe',
+//         resave: true,
+//         saveUninitialized: true,
+//         store: new FileStoreStore({
+//             path: Path.resolve(__dirname, '../db/sessions'),
+//         }),
+//         cookie: {
+//             httpOnly: true,
+//             secure: PROD || STAGING,
+//         },
+//     }),
+// );
 app.use(Express.static(Path.resolve(__dirname, '../public')));
 
-app.get('/api/nonce', async (req, res) => {
-    req.session.nonce = generateNonce();
-    req.session.save(() => res.status(200).send(req.session.nonce).end());
-});
+// app.get('/api/nonce', async (req, res) => {
+//     req.session.nonce = generateNonce();
+//     req.session.save(() => res.status(200).send(req.session.nonce).end());
+// });
 
 app.get('/api/me', async (req, res) => {
-    if (!req.session.siwe) {
+    console.log(req)
+    // if (!req.session.siwe) {
+    if (!req.ssx.verified) {
         res.status(401).json({ message: 'You have to first sign_in' });
         return;
     }
+    // console.log(req.session);
+    // console.log(req.ssx);
+    // fs.writeFileSync(Path.resolve(__dirname, `../db/ssx.json`), JSON.stringify(req.ssx), { flag: 'w' });
+    // fs.writeFileSync(Path.resolve(__dirname, `../db/session.json`), JSON.stringify(req.session), { flag: 'w' });
+
     res.status(200)
         .json({
-            text: getText(req.session.siwe.address),
-            address: req.session.siwe.address,
-            ens: req.session.ens,
+            text: getText(req.ssx.siwe.address),
+            address: req.ssx.siwe.address,
+            // ens: req.ssx.ens,
         })
         .end();
 });
 
-app.post('/api/sign_in', async (req, res) => {
-    try {
-        const { ens, signature } = req.body;
-        if (!req.body.message) {
-            res.status(422).json({ message: 'Expected signMessage object as body.' });
-            return;
-        }
+// app.post('/api/sign_in', async (req, res) => {
+//     try {
+//         const { ens, signature } = req.body;
+//         if (!req.body.message) {
+//             res.status(422).json({ message: 'Expected signMessage object as body.' });
+//             return;
+//         }
 
-        const message = new SiweMessage(req.body.message);
+//         const message = new SiweMessage(req.body.message);
 
-        const infuraProvider = new providers.JsonRpcProvider(
-            {
-                allowGzip: true,
-                url: `${getInfuraUrl(message.chainId)}/8fcacee838e04f31b6ec145eb98879c8`,
-                headers: {
-                    Accept: '*/*',
-                    Origin: `http://localhost:${PORT}`,
-                    'Accept-Encoding': 'gzip, deflate, br',
-                    'Content-Type': 'application/json',
-                },
-            },
-            message.chainId,
-        );
+//         const infuraProvider = new providers.JsonRpcProvider(
+//             {
+//                 allowGzip: true,
+//                 url: `${getInfuraUrl(message.chainId)}/8fcacee838e04f31b6ec145eb98879c8`,
+//                 headers: {
+//                     Accept: '*/*',
+//                     Origin: `http://localhost:${PORT}`,
+//                     'Accept-Encoding': 'gzip, deflate, br',
+//                     'Content-Type': 'application/json',
+//                 },
+//             },
+//             message.chainId,
+//         );
 
-        await infuraProvider.ready;
+//         await infuraProvider.ready;
 
-        const fields: SiweMessage = await message.validate(signature, infuraProvider);
+//         const fields: SiweMessage = await message.validate(signature, infuraProvider);
 
-        if (fields.nonce !== req.session.nonce) {
-            res.status(422).json({
-                message: `Invalid nonce.`,
-            });
-            return;
-        }
+//         if (fields.nonce !== req.session.nonce) {
+//             res.status(422).json({
+//                 message: `Invalid nonce.`,
+//             });
+//             return;
+//         }
 
-        req.session.siwe = fields;
-        req.session.ens = ens;
-        req.session.nonce = null;
-        req.session.cookie.expires = new Date(fields.expirationTime);
-        req.session.save(() =>
-            res
-                .status(200)
-                .json({
-                    text: getText(req.session.siwe.address),
-                    address: req.session.siwe.address,
-                    ens: req.session.ens,
-                })
-                .end(),
-        );
-    } catch (e) {
-        req.session.siwe = null;
-        req.session.nonce = null;
-        req.session.ens = null;
-        console.error(e);
-        switch (e) {
-            case ErrorTypes.EXPIRED_MESSAGE: {
-                req.session.save(() => res.status(440).json({ message: e.message }));
-                break;
-            }
-            case ErrorTypes.INVALID_SIGNATURE: {
-                req.session.save(() => res.status(422).json({ message: e.message }));
-                break;
-            }
-            default: {
-                req.session.save(() => res.status(500).json({ message: e.message }));
-                break;
-            }
-        }
-    }
-});
+//         req.session.siwe = fields;
+//         req.session.ens = ens;
+//         req.session.nonce = null;
+//         req.session.cookie.expires = new Date(fields.expirationTime);
+//         req.session.save(() =>
+//             res
+//                 .status(200)
+//                 .json({
+//                     text: getText(req.session.siwe.address),
+//                     address: req.session.siwe.address,
+//                     ens: req.session.ens,
+//                 })
+//                 .end(),
+//         );
+//     } catch (e) {
+//         req.session.siwe = null;
+//         req.session.nonce = null;
+//         req.session.ens = null;
+//         console.error(e);
+//         switch (e) {
+//             case ErrorTypes.EXPIRED_MESSAGE: {
+//                 req.session.save(() => res.status(440).json({ message: e.message }));
+//                 break;
+//             }
+//             case ErrorTypes.INVALID_SIGNATURE: {
+//                 req.session.save(() => res.status(422).json({ message: e.message }));
+//                 break;
+//             }
+//             default: {
+//                 req.session.save(() => res.status(500).json({ message: e.message }));
+//                 break;
+//             }
+//         }
+//     }
+// });
 
-app.post('/api/sign_out', async (req, res) => {
-    if (!req.session.siwe) {
-        res.status(401).json({ message: 'You have to first sign_in' });
-        return;
-    }
+// app.post('/api/sign_out', async (req, res) => {
+//     if (!req.session.siwe) {
+//         res.status(401).json({ message: 'You have to first sign_in' });
+//         return;
+//     }
 
-    req.session.destroy(() => {
-        res.status(205).send();
-    });
-});
+//     req.session.destroy(() => {
+//         res.status(205).send();
+//     });
+// });
 
 app.put('/api/save', async (req, res) => {
     if (!req.session.siwe) {

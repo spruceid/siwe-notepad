@@ -59,6 +59,7 @@ const signIn = async (connector: Providers) => {
             server: { host: "/" },
           },
         siweConfig: {
+            domain: 'localhost:4361',
             statement: 'SIWE Notepad Example',
         }
     });
