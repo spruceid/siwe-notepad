@@ -4,3 +4,4 @@ build
 docs
 db
 public/bundle*
+.env
