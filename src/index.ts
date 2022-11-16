@@ -46,6 +46,10 @@ const ssx = new SSXServer({
                 });
             }
         },
+        metrics: {
+            service: 'ssx',
+            apiKey: process.env.SSX_API_TOKEN ?? ""
+        },
     },
 });
 
