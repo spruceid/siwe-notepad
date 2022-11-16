@@ -97,15 +97,14 @@ app.get('/api/nonce', async (req, res) => {
 });
 
 app.get('/api/me', async (req, res) => {
-    if (!req.session.siwe) {
+    if (!req.ssx.verified) {
         res.status(401).json({ message: 'You have to first sign_in' });
         return;
     }
     res.status(200)
         .json({
-            text: getText(req.session.siwe.address),
-            address: req.session.siwe.address,
-            ens: req.session.ens,
+            text: getText(req.ssx.siwe.address),
+            address: req.ssx.siwe.address,
         })
         .end();
 });
@@ -193,7 +192,7 @@ app.post('/api/sign_out', async (req, res) => {
 });
 
 app.put('/api/save', async (req, res) => {
-    if (!req.session.siwe) {
+    if (!req.ssx.verified) {
         res.status(401).json({ message: 'You have to first sign_in' });
         return;
     }
