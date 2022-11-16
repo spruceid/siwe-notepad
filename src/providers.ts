@@ -55,6 +55,7 @@ const signIn = async (connector: Providers) => {
     ssx = new SSX({
         providers: {
             web3: { driver: provider },
+            server: { host: "/" },
           },
         siweConfig: {
             domain: 'localhost:4361',
