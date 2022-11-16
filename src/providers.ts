@@ -67,7 +67,7 @@ const signIn = async (connector: Providers) => {
         updateTitle(ens?.domain || address);
 
         const res = await fetch(`/api/me`);
-        if (res.status === 200) {  // this doesn't work yet without ssx-server
+        if (res.status === 200) {
             res.json().then(({ text, address, ens }) => {
                 connectedState(text, address, ens);
                 return;
@@ -85,10 +85,8 @@ const signIn = async (connector: Providers) => {
 const signOut = async () => {
     updateTitle('Untitled');
     updateNotepad('');
-    return fetch('/api/sign_out', {
-        method: 'POST',
-        credentials: 'include',
-    }).then(() => disconnectedState());
+    await ssx?.signOut();
+    return disconnectedState();
 };
 
 /**
