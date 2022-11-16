@@ -52,6 +52,7 @@ const signIn = async (connector: Providers) => {
     }
 
     ssx = new SSX({
+        resolveEns: true,
         providers: {
             web3: { driver: provider },
             server: { host: "/" },
