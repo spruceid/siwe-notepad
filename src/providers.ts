@@ -61,49 +61,13 @@ const signIn = async (connector: Providers) => {
             statement: 'SIWE Notepad Example',
         },
     });
-    let address, ens;
+
     try {
-        ({ address, ens } = await ssx.signIn());
+        let { address, ens } = await ssx.signIn();
         updateTitle(ens?.domain || address);
-    } catch (error) {
-        console.error(error);
-    }
 
-    /**
-     * Gets a nonce from our backend, this will add this nonce to the session so
-     * we can check it on sign in.
-     */
-    const nonce = await fetch('/api/nonce', { credentials: 'include' }).then((res) => res.text());
-
-    /**
-     * Creates the message object
-     */
-    const message = new SiweMessage({
-        domain: document.location.host,
-        address,
-        chainId: await provider.getNetwork().then(({ chainId }) => chainId),
-        uri: document.location.origin,
-        version: '1',
-        statement: 'SIWE Notepad Example',
-        nonce,
-    });
-
-    /**
-     * Generates the message to be signed and uses the provider to ask for a signature
-     */
-    const signature = await provider.getSigner().signMessage(message.prepareMessage());
-
-    /**
-     * Calls our sign_in endpoint to validate the message, if successful it will
-     * save the message in the session and allow the user to store his text
-     */
-    fetch(`/api/sign_in`, {
-        method: 'POST',
-        body: JSON.stringify({ message, ens, signature }),
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-    }).then(async (res) => {
-        if (res.status === 200) {
+        const res = await fetch(`/api/me`);
+        if (res.status === 200) {  // this doesn't work yet without ssx-server
             res.json().then(({ text, address, ens }) => {
                 connectedState(text, address, ens);
                 return;
@@ -113,7 +77,9 @@ const signIn = async (connector: Providers) => {
                 console.error(err);
             });
         }
-    });
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 const signOut = async () => {
