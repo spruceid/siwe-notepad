@@ -2,6 +2,7 @@ import WalletConnect from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
 import Mousetrap from 'mousetrap';
 import { SiweMessage } from 'siwe';
+import { SSX } from '@spruceid/ssx';
 
 declare global {
     interface Window {
@@ -27,6 +28,7 @@ let disconnectButton: HTMLDivElement;
 let saveButton: HTMLDivElement;
 let notepad: HTMLTextAreaElement;
 let unsaved: HTMLParagraphElement;
+let ssx: SSX | undefined;
 
 /**
  * We need these to remove/add the eventListeners
@@ -35,78 +37,37 @@ let unsaved: HTMLParagraphElement;
 const signIn = async (connector: Providers) => {
     let provider: ethers.providers.Web3Provider;
 
-    /**
-     * Connects to the wallet and starts a etherjs provider.
-     */
-    if (connector === 'metamask') {
-        await metamask.request({
-            method: 'eth_requestAccounts',
-        });
-        provider = new ethers.providers.Web3Provider(metamask);
-    } else {
-        /**
-         * The Infura ID provided just for the sake of the demo, you'll need to replace
-         * it if you want to go to production.
-         */
-        walletconnect = new WalletConnect({
-            infuraId: '8fcacee838e04f31b6ec145eb98879c8',
-        });
-        walletconnect.enable();
-        provider = new ethers.providers.Web3Provider(walletconnect);
+    switch (connector) {
+        case Providers.METAMASK:
+            provider = new ethers.providers.Web3Provider(metamask);
+            break;
+        case Providers.WALLET_CONNECT:
+            walletconnect = new WalletConnect({
+                infuraId: "8fcacee838e04f31b6ec145eb98879c8" || process.env.INFURA_API_KEY,
+            });
+            walletconnect.enable();
+            provider = new ethers.providers.Web3Provider(walletconnect);
+            break;
+        default:
+            throw new Error('Unknown connector');
     }
 
-    const [address] = await provider.listAccounts();
-    if (!address) {
-        throw new Error('Address not found.');
-    }
-
-    /**
-     * Try to resolve address ENS and updates the title accordingly.
-     */
-    let ens: string;
-    try {
-        ens = await provider.lookupAddress(address);
-    } catch (error) {
-        console.error(error);
-    }
-
-    updateTitle(ens ?? address);
-
-    /**
-     * Gets a nonce from our backend, this will add this nonce to the session so
-     * we can check it on sign in.
-     */
-    const nonce = await fetch('/api/nonce', { credentials: 'include' }).then((res) => res.text());
-
-    /**
-     * Creates the message object
-     */
-    const message = new SiweMessage({
-        domain: document.location.host,
-        address,
-        chainId: await provider.getNetwork().then(({ chainId }) => chainId),
-        uri: document.location.origin,
-        version: '1',
-        statement: 'SIWE Notepad Example',
-        nonce,
+    ssx = new SSX({
+        providers: {
+            web3: { driver: provider },
+          },
+        siweConfig: {
+            domain: 'localhost:4361',
+            statement: 'SIWE Notepad Example',
+        },
     });
 
-    /**
-     * Generates the message to be signed and uses the provider to ask for a signature
-     */
-    const signature = await provider.getSigner().signMessage(message.prepareMessage());
+    try {
+        let { address, ens } = await ssx.signIn();
+        updateTitle(ens?.domain || address);
 
-    /**
-     * Calls our sign_in endpoint to validate the message, if successful it will
-     * save the message in the session and allow the user to store his text
-     */
-    fetch(`/api/sign_in`, {
-        method: 'POST',
-        body: JSON.stringify({ message, ens, signature }),
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-    }).then(async (res) => {
-        if (res.status === 200) {
+        const res = await fetch(`/api/me`);
+        if (res.status === 200) {  // this doesn't work yet without ssx-server
             res.json().then(({ text, address, ens }) => {
                 connectedState(text, address, ens);
                 return;
@@ -116,7 +77,9 @@ const signIn = async (connector: Providers) => {
                 console.error(err);
             });
         }
-    });
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 const signOut = async () => {
