@@ -4,7 +4,6 @@
 const PORT = 4361;
 
 import { config } from 'dotenv';
-import { providers } from 'ethers';
 import Express from 'express';
 import Session from 'express-session';
 import fs from 'fs';
@@ -12,7 +11,6 @@ import Helmet from 'helmet';
 import Morgan from 'morgan';
 import Path from 'path';
 import FileStore from 'session-file-store';
-import { ErrorTypes, generateNonce, SiweMessage } from 'siwe';
 import { SSXServer, SSXExpressMiddleware, SSXInfuraProviderNetworks, SSXRPCProviders, } from '@spruceid/ssx-server';
 
 const FileStoreStore = FileStore(Session);
