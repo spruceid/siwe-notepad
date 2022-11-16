@@ -13,6 +13,8 @@ import Morgan from 'morgan';
 import Path from 'path';
 import FileStore from 'session-file-store';
 import { ErrorTypes, generateNonce, SiweMessage } from 'siwe';
+import { SSXServer, SSXExpressMiddleware, SSXInfuraProviderNetworks, SSXRPCProviders, } from '@spruceid/ssx-server';
+
 const FileStoreStore = FileStore(Session);
 
 config();
@@ -34,11 +36,30 @@ declare module 'express-session' {
     interface SessionData {
         siwe: SiweMessage;
         nonce: string;
-        ens: string;
+        // ens: string;
     }
 }
 
 const app = Express();
+
+// Setup ssx instance
+const ssx = new SSXServer({
+    signingKey: process.env.SSX_SIGNING_KEY,
+    providers: {
+        rpc: {
+            service: SSXRPCProviders.SSXInfuraProvider,
+            network: SSXInfuraProviderNetworks.MAINNET,
+            apiKey: process.env.INFURA_API_KEY ?? "",
+        },
+        sessionConfig: {
+            store: () => {
+                return new FileStoreStore({
+                    path: Path.resolve(__dirname, '../db/sessions'),
+                });
+            }
+        },
+    },
+});
 
 /**
  * CSP Policies
@@ -67,6 +88,7 @@ app.use(
         },
     }),
 );
+app.use(SSXExpressMiddleware(ssx));
 app.use(Express.static(Path.resolve(__dirname, '../public')));
 
 app.get('/api/nonce', async (req, res) => {
