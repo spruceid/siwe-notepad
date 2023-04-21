@@ -23,10 +23,10 @@ let notepad: HTMLTextAreaElement;
 let unsaved: HTMLParagraphElement;
 
 /**
- * The Project ID provided just for the sake of the demo, you'll need to replace
- * it if you want to go to production.
+ * Visit https://walletconnect.com/ for a Project ID
+ * if you want to use WalletConnect production.
  */
-const projectId = "b1c53283d2766ebd3ebe59002a0af581";
+const projectId = "PROJECT_ID";
 const chains = [mainnet, goerli];
 
 const {
