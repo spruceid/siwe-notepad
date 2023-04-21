@@ -62,6 +62,17 @@ export const web3Modal = new Web3Modal({
  */
 
 let wagmiProvider: any;
+
+watchSigner({}, (signer) => {
+    console.log(signer, signer?.provider)
+    if (signer && signer.provider) {
+        wagmiProvider = signer.provider;
+        signIn(wagmiProvider);
+    } else {
+        wagmiProvider = undefined;
+    }
+});
+
 const connect = async (connector: Providers) => {
     /**
      * Connects to the wallet and starts a etherjs provider.
@@ -74,13 +85,6 @@ const connect = async (connector: Providers) => {
         signIn(wagmiProvider);
     } else {
         web3Modal.openModal()
-        watchSigner({}, (signer) => {
-            console.log(signer, signer?.provider)
-            if (signer && signer.provider) {
-                wagmiProvider = signer.provider;
-                signIn(wagmiProvider);
-            }
-        });
     }
 };
 
