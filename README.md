@@ -4,10 +4,14 @@ Example usage of the Sign-In with Ethereum (SIWE) library.
 ![Sign-In with Ethereum Notepad](./notepad.png "Sign-In with Ethereum Notepad")
 
 ## Quickstart
-From this directory,
+If you would like to use WalletConnect with this example, you must first 
+obtain a [Project ID](https://cloud.walletconnect.com/sign-in) and update 
+`projectId` in `src/providers.ts`.
+
+From this directory, run the following in your terminal:
 ```bash
-npm install
-npm run dev
+yarn
+yarn dev
 ```
 
 ## Try the example

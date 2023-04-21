@@ -1,14 +1,9 @@
-import WalletConnect from '@walletconnect/web3-provider';
+import { configureChains, createClient, goerli, mainnet, watchSigner } from '@wagmi/core';
+import { w3mConnectors, w3mProvider, EthereumClient } from '@web3modal/ethereum';
+import { Web3Modal } from '@web3modal/html';
 import { ethers } from 'ethers';
 import Mousetrap from 'mousetrap';
 import { SiweMessage } from 'siwe';
-
-declare global {
-    interface Window {
-        ethereum: { request: (opt: { method: string }) => Promise<Array<string>> };
-        web3: unknown;
-    }
-}
 
 const enum Providers {
     METAMASK = 'metamask',
@@ -17,7 +12,6 @@ const enum Providers {
 
 //eslint-disable-next-line
 const metamask = window.ethereum;
-let walletconnect: WalletConnect;
 
 let metamaskButton: HTMLButtonElement;
 let walletConnectButton: HTMLButtonElement;
@@ -29,32 +23,72 @@ let notepad: HTMLTextAreaElement;
 let unsaved: HTMLParagraphElement;
 
 /**
+ * Visit https://walletconnect.com/ for a Project ID
+ * if you want to use WalletConnect production.
+ */
+const projectId = "PROJECT_ID";
+const chains = [mainnet, goerli];
+
+const {
+    provider
+} = configureChains(chains, [w3mProvider({
+    projectId
+})]);
+
+const wagmiClient = createClient({
+    autoConnect: false,
+    connectors: w3mConnectors({
+        projectId,
+        version: 1,
+        chains
+    }),
+    provider
+});
+
+const ethereumClient = new EthereumClient(wagmiClient, chains);
+
+export const web3Modal = new Web3Modal({
+    projectId,
+    walletImages: {
+        safe: 'https://pbs.twimg.com/profile_images/1566773491764023297/IvmCdGnM_400x400.jpg'
+    }
+},
+    ethereumClient
+);
+
+
+/**
  * We need these to remove/add the eventListeners
  */
 
-const signIn = async (connector: Providers) => {
-    let provider: ethers.providers.Web3Provider;
+let wagmiProvider: any;
 
+watchSigner({}, (signer) => {
+    console.log(signer, signer?.provider)
+    if (signer && signer.provider) {
+        wagmiProvider = signer.provider;
+        signIn(wagmiProvider);
+    } else {
+        wagmiProvider = undefined;
+    }
+});
+
+const connect = async (connector: Providers) => {
     /**
      * Connects to the wallet and starts a etherjs provider.
      */
-    if (connector === 'metamask') {
+    if (connector === 'metamask' && metamask) {
         await metamask.request({
             method: 'eth_requestAccounts',
         });
-        provider = new ethers.providers.Web3Provider(metamask);
+        wagmiProvider = new ethers.providers.Web3Provider(metamask as any);
+        signIn(wagmiProvider);
     } else {
-        /**
-         * The Infura ID provided just for the sake of the demo, you'll need to replace
-         * it if you want to go to production.
-         */
-        walletconnect = new WalletConnect({
-            infuraId: '8fcacee838e04f31b6ec145eb98879c8',
-        });
-        walletconnect.enable();
-        provider = new ethers.providers.Web3Provider(walletconnect);
+        web3Modal.openModal()
     }
+};
 
+const signIn = async (provider: ethers.providers.Web3Provider) => {
     const [address] = await provider.listAccounts();
     if (!address) {
         throw new Error('Address not found.');
@@ -63,9 +97,9 @@ const signIn = async (connector: Providers) => {
     /**
      * Try to resolve address ENS and updates the title accordingly.
      */
-    let ens: string;
+    let ens: string = '';
     try {
-        ens = await provider.lookupAddress(address);
+        ens = await provider.lookupAddress(address) ?? '';
     } catch (error) {
         console.error(error);
     }
@@ -117,7 +151,7 @@ const signIn = async (connector: Providers) => {
             });
         }
     });
-};
+}
 
 const signOut = async () => {
     updateTitle('Untitled');
@@ -183,8 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toggleSize.addEventListener('click', maximize);
     disconnectButton.addEventListener('click', signOut);
-    metamaskButton.addEventListener('click', () => signIn(Providers.METAMASK));
-    walletConnectButton.addEventListener('click', () => signIn(Providers.WALLET_CONNECT));
+    metamaskButton.addEventListener('click', () => connect(Providers.METAMASK));
+    walletConnectButton.addEventListener('click', () => connect(Providers.WALLET_CONNECT));
     saveButton.addEventListener('click', save);
     notepad.addEventListener('input', enableSave);
 });
@@ -203,7 +237,7 @@ const enableSave = () => {
     window.onbeforeunload = () => '(***Unsaved Changes***)';
 };
 
-Mousetrap.bind('mod+s', save);
+Mousetrap.bind('mod+s', (e) => { save(e) });
 
 const connectedState = (text: string, address: string, ens: string) => {
     /**
@@ -233,7 +267,12 @@ const disconnectedState = () => {
     disconnectButton.classList.add('hidden');
 };
 
-const updateTitle = (text: string) => (document.getElementById('title').innerText = text);
+const updateTitle = (text: string) => {
+    const title = document.getElementById('title');
+    if (title) {
+        title.innerText = text;
+    }
+};
 
 const updateUnsavedChanges = (text: string) => (unsaved.innerText = text);
 
