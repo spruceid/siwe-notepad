@@ -10,7 +10,8 @@
         "baseUrl": ".",
         "paths": {
             "*": ["node_modules/*"]
-        }
+        },
+        "strict": false
     },
-    "include": ["src/**/index.ts"]
+    "include": ["src/**/index.ts"],
 }

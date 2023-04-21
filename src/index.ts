@@ -12,7 +12,7 @@ import Helmet from 'helmet';
 import Morgan from 'morgan';
 import Path from 'path';
 import FileStore from 'session-file-store';
-import { ErrorTypes, generateNonce, SiweMessage } from 'siwe';
+import { SiweErrorType, generateNonce, SiweMessage } from 'siwe';
 const FileStoreStore = FileStore(Session);
 
 config();
@@ -114,14 +114,7 @@ app.post('/api/sign_in', async (req, res) => {
 
         await infuraProvider.ready;
 
-        const fields: SiweMessage = await message.validate(signature, infuraProvider);
-
-        if (fields.nonce !== req.session.nonce) {
-            res.status(422).json({
-                message: `Invalid nonce.`,
-            });
-            return;
-        }
+        const { data: fields} = await message.verify({ signature, nonce: req.session.nonce }, { provider: infuraProvider });
 
         req.session.siwe = fields;
         req.session.ens = ens;
@@ -143,11 +136,11 @@ app.post('/api/sign_in', async (req, res) => {
         req.session.ens = null;
         console.error(e);
         switch (e) {
-            case ErrorTypes.EXPIRED_MESSAGE: {
+            case SiweErrorType.EXPIRED_MESSAGE: {
                 req.session.save(() => res.status(440).json({ message: e.message }));
                 break;
             }
-            case ErrorTypes.INVALID_SIGNATURE: {
+            case SiweErrorType.INVALID_SIGNATURE: {
                 req.session.save(() => res.status(422).json({ message: e.message }));
                 break;
             }

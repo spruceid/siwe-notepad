@@ -6,8 +6,8 @@ Example usage of the Sign-In with Ethereum (SIWE) library.
 ## Quickstart
 From this directory,
 ```bash
-npm install
-npm run dev
+yarn
+yarn dev
 ```
 
 ## Try the example
