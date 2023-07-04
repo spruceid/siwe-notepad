@@ -36,7 +36,7 @@ let unsaved: HTMLParagraphElement;
  * Visit https://walletconnect.com/ for a Project ID
  * if you want to use WalletConnect production.
  */
-const projectId = "2a2a5978a58aad734d13a2d194ec469a";
+const projectId = "PROJECT_ID";
 const chains = [mainnet, goerli];
 
 const { provider } = configureChains(chains, [
