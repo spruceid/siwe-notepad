@@ -537,7 +537,7 @@
     "@motionone/utils" "^10.15.1"
     tslib "^2.3.1"
 
-"@motionone/dom@^10.16.2":
+"@motionone/dom@^10.15.5", "@motionone/dom@^10.16.2":
   version "10.16.2"
   resolved "https://registry.yarnpkg.com/@motionone/dom/-/dom-10.16.2.tgz#0c44df8ee3d1cfc50ee11d27050b27824355a61a"
   integrity sha512-bnuHdNbge1FutZXv+k7xub9oPWcF0hsu8y1HTH/qg6av58YI0VufZ3ngfC7p2xhMJMnoh0LXFma2EGTgPeCkeg==
@@ -566,7 +566,7 @@
     "@motionone/utils" "^10.15.1"
     tslib "^2.3.1"
 
-"@motionone/svelte@^10.16.2":
+"@motionone/svelte@^10.15.5", "@motionone/svelte@^10.16.2":
   version "10.16.2"
   resolved "https://registry.yarnpkg.com/@motionone/svelte/-/svelte-10.16.2.tgz#0b37c3b12927814d31d24941d1ca0ff49981b444"
   integrity sha512-38xsroKrfK+aHYhuQlE6eFcGy0EwrB43Q7RGjF73j/kRUTcLNu/LAaKiLLsN5lyqVzCgTBVt4TMT/ShWbTbc5Q==
@@ -588,7 +588,7 @@
     hey-listen "^1.0.8"
     tslib "^2.3.1"
 
-"@motionone/vue@^10.16.2":
+"@motionone/vue@^10.15.5", "@motionone/vue@^10.16.2":
   version "10.16.2"
   resolved "https://registry.yarnpkg.com/@motionone/vue/-/vue-10.16.2.tgz#faf13afc27620a2df870c71c58a04ee8de8dea65"
   integrity sha512-7/dEK/nWQXOkJ70bqb2KyNfSWbNvWqKKq1C8juj+0Mg/AorgD8O5wE3naddK0G+aXuNMqRuc4jlsYHHWHtIzVw==
@@ -1161,7 +1161,7 @@
     abitype "^0.3.0"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@0.10.16":
+"@wagmi/core@^0.10.16":
   version "0.10.16"
   resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.10.16.tgz#816eb84504acff08a7d1f146544d02d38e7adb20"
   integrity sha512-x4FxnXDSv9VpYRHT3+MMBs3cqeU02AFejHt7C+Ds1Pr1dyRF6CoTM0o1OmEk+ikKaFjX68+JhydZ9ZaIYevzRw==
@@ -1560,35 +1560,44 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/core@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/core/-/core-2.6.2.tgz#776f18b3014eab1d99c257cba7acd426d786d981"
-  integrity sha512-7gi618Z+bFOwEzhdxROt4AC8N45oiPHJFEA0AX3PxhB+ni5Usc1VQ03jQhk7DnQLDnQq+3hCY71F1escdxkdBA==
+"@web3modal/core@2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@web3modal/core/-/core-2.3.7.tgz#2c8863489695c3ed4b7b01e416e126cc5c8d18ad"
+  integrity sha512-ggl9+tkAzz43npj97iTj6p4oQYaklxADQyCKAX7AnMfglZg5bRseMDGnfmpvnjlDn8TI+DGGO6da3ITmYRIDYQ==
   dependencies:
     buffer "6.0.3"
-    valtio "1.10.6"
+    valtio "1.10.4"
 
-"@web3modal/ethereum@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethereum/-/ethereum-2.6.2.tgz#e6522ddf00444cb3e6e54d390a74864c329cee5e"
-  integrity sha512-8QCzJj0+x6y/7V++DQnXdPjdmMvq+zm/Fl8CEKhNlni9p4H406q7ramjdJEu1Bk4xtCklYh/aU3ZGR5wUIDysA==
+"@web3modal/ethereum@2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethereum/-/ethereum-2.3.7.tgz#4e5447ea1a86366580e89241e36e4b6fca5f6b30"
+  integrity sha512-CuqgWEMtCWS8tKDT2VpnzeaEfrlNYRQxyrFs8fTtrD6/NYIlinqv/sc9W/PcIMETrhReBwcrpjf+jG6He3261g==
 
-"@web3modal/html@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/html/-/html-2.6.2.tgz#f2af87cdf1b078d2b774fc51b3e7d631ccb4487f"
-  integrity sha512-SUm0lUyd+Dps7CCWbv0w5RZgqIHNJF/omTwZJ8yZckbE7JjhxnoFDjGNZI3AVJo0HSEZHWilDQvhF2NaLv97eg==
+"@web3modal/html@2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@web3modal/html/-/html-2.3.7.tgz#50a36394c6a7523259c47ac2ba42aa0fcaca4a2c"
+  integrity sha512-LNMp9SGy9QWasGiEBaCmzCbOFYzcoojYxNLzysaIiShM1HzhccLB14d2krxgHZ4/oRh3IWQr9ccqNyRM0smyVg==
   dependencies:
-    "@web3modal/core" "2.6.2"
-    "@web3modal/ui" "2.6.2"
+    "@web3modal/core" "2.3.7"
+    "@web3modal/standalone" "2.3.7"
+    "@web3modal/ui" "2.3.7"
 
-"@web3modal/ui@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui/-/ui-2.6.2.tgz#ed88f06e9c83bd0b3bb22437a5a8ffc460ef21db"
-  integrity sha512-bhBNsookaqkTdLjyERBA7XM9KV8XPQ2bWAGd3roIgAFxLlaoWqrV0pPZHLtp+C97AglV4mbeqvFsHZ0jwpm8lw==
+"@web3modal/standalone@2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@web3modal/standalone/-/standalone-2.3.7.tgz#2536effb3a7c4b9384fa51c43dc67ff3caed0314"
+  integrity sha512-zgavWcimRVXnLdup2WQ0fFEnBnH+Wwn+k1/XzhwVpdJ//mrExWNYQaXt139RijxGUcux68ExRCyMqm1jkXTq3g==
   dependencies:
-    "@web3modal/core" "2.6.2"
-    lit "2.7.5"
-    motion "10.16.2"
+    "@web3modal/core" "2.3.7"
+    "@web3modal/ui" "2.3.7"
+
+"@web3modal/ui@2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui/-/ui-2.3.7.tgz#0867ec4262a5a221418acdb571101d05628e8d62"
+  integrity sha512-mNDXY4ElcvXXixKHZTLcEjKC9zs3O8BD1EtaC8cKIy+RKFyHMpLB1DOQmz77tn91jNjOkrvEryqUwCbsJ7hjfA==
+  dependencies:
+    "@web3modal/core" "2.3.7"
+    lit "2.7.3"
+    motion "10.15.5"
     qrcode "1.5.3"
 
 "@webassemblyjs/ast@1.11.5", "@webassemblyjs/ast@^1.11.5":
@@ -3437,6 +3446,15 @@ lit-html@^2.7.0:
   dependencies:
     "@types/trusted-types" "^2.0.2"
 
+lit@2.7.3:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.7.3.tgz#7f7920dbaba12828d359ca3439cd6f73619061da"
+  integrity sha512-0a+u+vVbmgSfPu+fyvqjMPBX0Kwbyj9QOv9MbQFZhWGlV2cyk3lEwgfUQgYN+i/lx++1Z3wZknSIp3QCKxHLyg==
+  dependencies:
+    "@lit/reactive-element" "^1.6.0"
+    lit-element "^3.3.0"
+    lit-html "^2.7.0"
+
 lit@2.7.5:
   version "2.7.5"
   resolved "https://registry.yarnpkg.com/lit/-/lit-2.7.5.tgz#60bc82990cfad169d42cd786999356dcf79b035f"
@@ -3581,6 +3599,18 @@ morgan@^1.10.0:
     depd "~2.0.0"
     on-finished "~2.3.0"
     on-headers "~1.0.2"
+
+motion@10.15.5:
+  version "10.15.5"
+  resolved "https://registry.yarnpkg.com/motion/-/motion-10.15.5.tgz#d336ddbdd37bc28bb99fbb243fe309df6c685ad6"
+  integrity sha512-ejP6KioN4pigTGxL93APzOnvtLklParL59UQB2T3HWXQBxFcIp5/7YXFmkgiA6pNKKzjvnLhnonRBN5iSFMnNw==
+  dependencies:
+    "@motionone/animation" "^10.15.1"
+    "@motionone/dom" "^10.15.5"
+    "@motionone/svelte" "^10.15.5"
+    "@motionone/types" "^10.15.1"
+    "@motionone/utils" "^10.15.1"
+    "@motionone/vue" "^10.15.5"
 
 motion@10.16.2:
   version "10.16.2"
@@ -4010,6 +4040,11 @@ proxy-addr@~2.0.7:
   dependencies:
     forwarded "0.2.0"
     ipaddr.js "1.9.1"
+
+proxy-compare@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-2.5.0.tgz#0387c5e4d283ba9b1c0353bb20def4449b06bbd2"
+  integrity sha512-f1us0OsVAJ3tdIMXGQx2lmseYS4YXe4W+sKF5g5ww/jV+5ogMadPt+sIZ+88Ga9kvMJsrRNWzCrKPpr6pMWYbA==
 
 proxy-compare@2.5.1:
   version "2.5.1"
@@ -4843,6 +4878,14 @@ valid-url@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
   integrity sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==
+
+valtio@1.10.4:
+  version "1.10.4"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.10.4.tgz#762647d102f14060111ed21e8afa28f424c2be78"
+  integrity sha512-gqGWh0DjtDMAy8Jaui8ufFoxlQB1k1NiA/QHrpKoTUk9EeY331WKeYhvtGn1u703RcefrDCez7PT+qeCu9lWEw==
+  dependencies:
+    proxy-compare "2.5.0"
+    use-sync-external-store "1.2.0"
 
 valtio@1.10.6:
   version "1.10.6"

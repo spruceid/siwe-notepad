@@ -63,6 +63,7 @@ export const web3Modal = new Web3Modal(
     walletImages: {
       safe: "https://pbs.twimg.com/profile_images/1566773491764023297/IvmCdGnM_400x400.jpg",
     },
+    themeMode: "light",
   },
   ethereumClient
 );
